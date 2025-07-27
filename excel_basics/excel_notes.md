@@ -50,9 +50,21 @@ df_selected.iloc[2] → ردیف سوم (اندیس ۲)
 برای نمایش یک سلول df_selected.iloc[1]['Precipitation'] اوکیه که میگه ردیف 2 و ستون بارش
 ## تبدیل نوع ستون به رشته (String) با astype
 
-فرض کن می‌خواهی ستون `'Persian Date'` را از هر نوعی (مثلاً عدد یا تاریخ) به **رشته** (string) تبدیل کنی. کافی است از تابع `.astype(str)` استفاده کنی:
+فرض کن می‌خواهی ستون `'Persian Date'` را از هر نوعی (مثلاً عدد یا تاریخ) به **رشته** (string) تبدیل کنی. کافی است از تابع `astype(str).` استفاده کنی:
 
 ```python
 df_selected['Persian Date'] = df_selected['Persian Date'].astype(str)
+## استخراج سال و ماه و روز از تاریخ شمسی
 
+```python
+df_selected[['Year', 'Month', 'Day']] = df_selected['Persian Date'].str.split('/', expand=True)
+ستون تاریخ فارسی انتخاب کرده و با دستور split با / آن ها جدا و برای هر کدام یک مقدار جداگانه در نظر میگیرد
 
+## تبدیل سال، ماه و روز به عدد صحیح (int)
+بعد از اینکه سال، ماه و روز را از تاریخ جدا کردی، آن‌ها به صورت **رشته (string)** ذخیره می‌شوند.  
+برای اینکه بتوانی دسته‌بندی یا عملیات عددی انجام بدهی، باید هر سه ستون را به نوع عدد صحیح (`int`) تبدیل کنی:
+
+```python
+df_selected['Year'] = df_selected['Year'].astype(int)
+df_selected['Month'] = df_selected['Month'].astype(int)
+df_selected['Day'] = df_selected['Day'].astype(int)
