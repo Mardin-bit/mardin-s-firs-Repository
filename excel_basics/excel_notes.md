@@ -48,5 +48,11 @@ df_selected.iloc[1] → ردیف دوم (اندیس ۱)
 df_selected.iloc[2] → ردیف سوم (اندیس ۲)
 
 برای نمایش یک سلول df_selected.iloc[1]['Precipitation'] اوکیه که میگه ردیف 2 و ستون بارش
-**تبدیل مقادیر به رشته 
+## تبدیل نوع ستون به رشته (String) با astype
+
+فرض کن می‌خواهی ستون `'Persian Date'` را از هر نوعی (مثلاً عدد یا تاریخ) به **رشته** (string) تبدیل کنی. کافی است از تابع `.astype(str)` استفاده کنی:
+
+```python
+df_selected['Persian Date'] = df_selected['Persian Date'].astype(str)
+
 
