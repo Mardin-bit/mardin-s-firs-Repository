@@ -3,10 +3,27 @@ import matplotlib.pyplot as plt
 from openpyxl import Workbook
 from openpyxl.drawing.image import Image as XLImage
 
+# Mapping from Persian month names to their Finglish (transliterated) equivalents
+MONTH_MAP = {
+    "فروردین": "farvardin",
+    "اردیبهشت": "ordibehesht",
+    "خرداد": "khordad",
+    "تیر": "tir",
+    "مرداد": "mordad",
+    "شهریور": "shahrivar",
+    "مهر": "mehr",
+    "آبان": "aban",
+    "آذر": "azar",
+    "دی": "dey",
+    "بهمن": "bahman",
+    "اسفند": "esfand",
+}
+
 
 def extract_month_name(column: str) -> str:
-    """Return the Persian month name extracted from column header."""
-    return column.replace("SPI", "").strip()
+    """Return the Finglish month name derived from the column header."""
+    persian_name = column.replace("SPI", "").strip()
+    return MONTH_MAP.get(persian_name, persian_name)
 
 
 def create_spi_charts(input_file: str = "chart_of_spi.xlsx", output_file: str = "spi_area_charts.xlsx") -> None:
@@ -14,6 +31,14 @@ def create_spi_charts(input_file: str = "chart_of_spi.xlsx", output_file: str = 
     df = pd.read_excel(input_file)
     # Remove leading/trailing spaces from column names
     df.columns = [c.strip() for c in df.columns]
+
+    # Convert all columns to numeric where possible
+    for col in df.columns:
+        df[col] = pd.to_numeric(df[col], errors="coerce")
+
+    # Sort by year to ensure charts progress chronologically
+    if "year" in df.columns:
+        df.sort_values("year", inplace=True)
 
     year_col = "year"
     if year_col not in df.columns:
@@ -24,9 +49,11 @@ def create_spi_charts(input_file: str = "chart_of_spi.xlsx", output_file: str = 
     images = []
     for col in month_columns:
         month_name = extract_month_name(col)
-        data = df[[year_col, col]].dropna()
-        years = data[year_col]
-        values = data[col]
+        data = df[[year_col, col]].dropna(subset=[year_col, col])
+        if data.empty:
+            continue
+        years = data[year_col].astype(float)
+        values = data[col].astype(float)
 
         plt.figure(figsize=(8, 4))
         plt.fill_between(years, values, 0, where=values >= 0, interpolate=True, color="blue", alpha=0.7)
